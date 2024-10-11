@@ -1,0 +1,31 @@
+# This is an example configuration file for Spot.  It is not used!
+
+/**:
+  ros__parameters:
+    # Spot Login Information
+    username: "xxx"
+    password: "xxxxxxxxxxxx"
+    hostname: "xxxxxxxxxxxx"
+
+    # Status Updates from Spot
+    metrics_rate: 0.04
+    lease_rate: 1.0
+    async_tasks_rate: 10.0
+
+    # Some boolean parameters
+    auto_claim: True
+    auto_power_on: True
+    auto_stand: True
+
+    # Estop Parameters
+    estop_timeout: 9.0
+    start_estop: False
+
+    # pass either odom/vision. This frame will become the parent of body in tf2 tree and will be used in odometry topic. https://dev.bostondynamics.com/docs/concepts/geometry_and_frames.html?highlight=frame#frames-in-the-spot-robot-world for more info.
+    # TODO replace with the lidar eventually
+    preferred_odom_frame: "odom" 
+
+    cmd_duration: 0.25 # The duration of cmd_vel commands. Increase this if spot stutters when publishing cmd_vel.
+    rgb_cameras: False  # Set to False if your robot has greyscale cameras -- otherwise you won't receive data.
+    initialize_spot_cam: True # Set to True if you are connecting to a SpotCam payload module.
+
