@@ -11,7 +11,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution, TextSubstitution
 from launch_ros.substitutions import FindPackageShare
 
-from spot_driver.launch.spot_launch_helpers import IMAGE_PUBLISHER_ARGS, declare_image_publisher_args
+from spot_driver.launch.spot_launch_helpers import IMAGE_PUBLISHER_ARGS, declare_image_publisher_args, spot_has_arm
 
 THIS_PACKAGE = "spot_mine_navigation"
 
@@ -29,21 +29,21 @@ def launch_setup(context: LaunchContext, ld: LaunchDescription) -> None:
     if (config_file_path != "") and (not os.path.isfile(config_file_path)):
         raise FileNotFoundError("Configuration file '{}' does not exist!".format(config_file_path))
 
-    # if mock_enable:
-    #     mock_has_arm = IfCondition(LaunchConfiguration("mock_has_arm")).evaluate(context)
-    #     has_arm = mock_has_arm
-    # else:
-    #     has_arm = spot_has_arm(config_file_path=config_file.perform(context), spot_name=spot_name)
+    if mock_enable:
+        mock_has_arm = IfCondition(LaunchConfiguration("mock_has_arm")).evaluate(context)
+        has_arm = mock_has_arm
+    else:
+        has_arm = spot_has_arm(config_file_path=config_file.perform(context), spot_name=spot_name)
 
     pkg_share = FindPackageShare("spot_description").find("spot_description")
 
     # Since spot_image_publisher_node is responsible for retrieving and publishing images, disable all image publishing in spot_driver.
     spot_driver_params = {"spot_name": spot_name}
 
-    # if mock_enable:
-    #     mock_spot_driver_params = {"mock_has_arm": mock_has_arm}
-    #     # Merge the two dicts
-    #     spot_driver_params = {**spot_driver_params, **mock_spot_driver_params}
+    if mock_enable:
+        mock_spot_driver_params = {"mock_has_arm": mock_has_arm}
+        # Merge the two dicts
+        spot_driver_params = {**spot_driver_params, **mock_spot_driver_params}
 
     spot_driver_node = launch_ros.actions.Node(
         package="spot_driver",
@@ -63,6 +63,9 @@ def launch_setup(context: LaunchContext, ld: LaunchDescription) -> None:
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution([pkg_share, "urdf", "spot.urdf.xacro"]),
+            " ",
+            "arm:=",
+            TextSubstitution(text=str(has_arm).lower()),
             " ",
             "tf_prefix:=",
             tf_prefix,
