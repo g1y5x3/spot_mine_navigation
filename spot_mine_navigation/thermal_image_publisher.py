@@ -1,12 +1,14 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.impl import rcutils_logger
+from cv_bridge import CvBridge
+from sensor_msgs.msg import Image
 from std_msgs.msg import String
 
 import bosdyn.client
-from bosdyn.client import Robot, spot_cam
+from bosdyn.client import spot_cam
 from bosdyn.client.payload import PayloadClient
-from spot_wrapper.cam_webrtc_client import WebRTCClient
+from spot_wrapper.cam_wrapper import ImageStreamWrapper
 from spot_wrapper.wrapper import SpotWrapper
 
 class thermalPublisher(Node):
@@ -19,11 +21,8 @@ class thermalPublisher(Node):
         self.username = self.get_parameter('username').value
         self.password = self.get_parameter('password').value
         self.logger = rcutils_logger.RcutilsLogger(name=f"thermal_publisher")
+        self.cv_bridge = CvBridge()
         port = 0
-
-        # print(self.hostname)
-        # print(self.username)
-        # print(self.password)
 
         self.sdk = bosdyn.client.create_standard_sdk("Spot CAM Client", cert_resource_glob=None)
         spot_cam.register_all_service_clients(self.sdk)
@@ -44,17 +43,21 @@ class thermalPublisher(Node):
                 "admin interface"
             )
 
-        self.publisher_ = self.create_publisher(String, 'topic', 10)
+        self.image_stream = ImageStreamWrapper(self.hostname, self.robot, self.logger)
+        self.last_image_time = self.image_stream.last_image_time
+
+        self.image_pub = self.create_publisher(Image, '/spot/cam/image', 1)
         timer_period = 0.5 # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 
     def timer_callback(self):
-        msg = String()
-        msg.data = f"Hello World: {self.i}"  
-        self.publisher_.publish(msg)
-        self.get_logger().info(f"Publishing: \"{msg.data}\"")
-        self.i += 1
+        if self.last_image_time != self.image_stream.last_image_time:
+            image_msg = self.cv_bridge.cv2_to_imgmsg(self.image_stream.last_image, "bgr8")
+            self.image_pub.publish(image_msg)
+            self.last_image_time = self.image_stream.last_image_time
+            self.get_logger().info(f"Publishing: Image-{self.i}")
+            self.i += 1
 
 def main(args=None):
     rclpy.init(args=args)
