@@ -46,17 +46,19 @@ class thermalPublisher(Node):
         self.image_stream = ImageStreamWrapper(self.hostname, self.robot, self.logger)
         self.last_image_time = self.image_stream.last_image_time
 
-        self.image_pub = self.create_publisher(Image, '/spot/cam/image', 1)
+        self.image_pub = self.create_publisher(Image, '/spot_cam/image', 1)
         timer_period = 0.5 # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 
     def timer_callback(self):
         if self.last_image_time != self.image_stream.last_image_time:
-            image_msg = self.cv_bridge.cv2_to_imgmsg(self.image_stream.last_image, "bgr8")
+            image_cv = self.image_stream.last_image[:, 190:1090]
+            height, width, _ = image_cv.shape
+            image_msg = self.cv_bridge.cv2_to_imgmsg(image_cv, "bgr8")
             self.image_pub.publish(image_msg)
             self.last_image_time = self.image_stream.last_image_time
-            self.get_logger().info(f"Publishing: Image-{self.i}")
+            self.get_logger().debug(f"Publishing: Image-{self.i} height {height}, width {width}")
             self.i += 1
 
 def main(args=None):
