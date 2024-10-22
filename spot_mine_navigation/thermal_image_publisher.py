@@ -1,18 +1,22 @@
-import sys, rclpy
+import rclpy
 from rclpy.node import Node
 from rclpy.impl import rcutils_logger
-from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
 
 import bosdyn.client
 from bosdyn.client import spot_cam
 from bosdyn.client.payload import PayloadClient
+from bosdyn.client.spot_cam.ptz import PtzClient
+from bosdyn.api.spot_cam import ptz_pb2
+
 from spot_wrapper.cam_wrapper import ImageStreamWrapper
 from spot_wrapper.wrapper import SpotWrapper
 
 class ThermalPublisher(Node):
     def __init__(self):
         super().__init__('thermal_publisher')
+        # TODO pass the parameters through launch
         self.declare_parameter('username', "spot")
         self.declare_parameter('password', "12345")
         self.declare_parameter('hostname', "255.255.255.255")
@@ -22,7 +26,7 @@ class ThermalPublisher(Node):
         self.logger = rcutils_logger.RcutilsLogger(name=f"thermal_publisher")
         self.cv_bridge = CvBridge()
 
-        # initialize the spotCAM payload
+        # initialize the spotCAM payload, mostly just from the cam_wrapper
         port = 0
         self.sdk = bosdyn.client.create_standard_sdk("Spot CAM Client", cert_resource_glob=None)
         spot_cam.register_all_service_clients(self.sdk)
@@ -43,15 +47,21 @@ class ThermalPublisher(Node):
                 "admin interface"
             )
 
+        ptz_desc = ptz_pb2.PtzDescription(name="mech")
+        ptz_position = self.robot.ensure_client(PtzClient.default_service_name).set_ptz_position(ptz_desc, 325, 0, 1)
+        self.get_logger().info(f"PTZ Position: pan {ptz_position.pan.value}, tilt {ptz_position.tilt.value}, zoom {ptz_position.zoom.value}")
+
         self.image_stream = ImageStreamWrapper(self.hostname, self.robot, self.logger)
         self.last_image_time = self.image_stream.last_image_time
 
-        self.image_pub = self.create_publisher(Image, '/spot_cam/image', 1)
+        self.image_pub = self.create_publisher(Image, '/camera/spot_cam', 1)
         timer_period = 0.5 # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 
     def timer_callback(self):
+        # converted from ROS 1 https://github.com/heuristicus/spot_ros/blob/master/spot_cam/src/spot_cam/spot_cam_ros.py#L1179
+        # 190:1090 is used to crop out the colormap
         if self.last_image_time != self.image_stream.last_image_time:
             image_cv = self.image_stream.last_image[:, 190:1090]
             height, width, _ = image_cv.shape
