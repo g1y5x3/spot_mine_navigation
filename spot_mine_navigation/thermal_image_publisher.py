@@ -67,8 +67,6 @@ def main(args=None):
     try:
         rclpy.spin(thermal_publisher)
     except KeyboardInterrupt:
-        pass
-    finally:
         thermal_publisher.image_stream.shutdown_flag.set()
         thermal_publisher.destroy_node()
         rclpy.shutdown()

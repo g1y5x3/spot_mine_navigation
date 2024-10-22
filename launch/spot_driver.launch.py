@@ -57,7 +57,7 @@ def launch_setup(context: LaunchContext, ld: LaunchDescription) -> None:
     ld.add_action(spot_driver_node)
 
     if not tf_prefix and spot_name:
-        tf_prefix = PathJoinSubstitution([spot_name, ""]
+        tf_prefix = PathJoinSubstitution([spot_name, ""])
     
     object_sync_node = launch_ros.actions.Node(
         package="spot_driver",
