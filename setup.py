@@ -22,7 +22,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'talker = spot_mine_navigation.thermal_image_publisher:main'
+            'thermal_publisher = spot_mine_navigation.thermal_image_publisher:main'
         ],
     },
 )
