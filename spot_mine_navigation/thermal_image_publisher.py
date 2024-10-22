@@ -1,9 +1,8 @@
-import rclpy
+import sys, rclpy
 from rclpy.node import Node
 from rclpy.impl import rcutils_logger
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
-from std_msgs.msg import String
 
 import bosdyn.client
 from bosdyn.client import spot_cam
@@ -11,7 +10,7 @@ from bosdyn.client.payload import PayloadClient
 from spot_wrapper.cam_wrapper import ImageStreamWrapper
 from spot_wrapper.wrapper import SpotWrapper
 
-class thermalPublisher(Node):
+class ThermalPublisher(Node):
     def __init__(self):
         super().__init__('thermal_publisher')
         self.declare_parameter('username', "spot")
@@ -22,8 +21,9 @@ class thermalPublisher(Node):
         self.password = self.get_parameter('password').value
         self.logger = rcutils_logger.RcutilsLogger(name=f"thermal_publisher")
         self.cv_bridge = CvBridge()
-        port = 0
 
+        # initialize the spotCAM payload
+        port = 0
         self.sdk = bosdyn.client.create_standard_sdk("Spot CAM Client", cert_resource_glob=None)
         spot_cam.register_all_service_clients(self.sdk)
         self.robot = self.sdk.create_robot(self.hostname)
@@ -63,12 +63,15 @@ class thermalPublisher(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    thermal_publisher = thermalPublisher()
-    rclpy.spin(thermal_publisher)
-
-    thermal_publisher.destroy_node()
-    rclpy.shutdown()
- 
+    thermal_publisher = ThermalPublisher()
+    try:
+        rclpy.spin(thermal_publisher)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        thermal_publisher.image_stream.shutdown_flag.set()
+        thermal_publisher.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == "__main__":
     main()

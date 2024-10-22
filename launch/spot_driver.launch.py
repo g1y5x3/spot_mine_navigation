@@ -1,5 +1,3 @@
-# Copyright (c) 2023-2024 Boston Dynamics AI Institute LLC. All rights reserved.
-
 import os
 
 import launch
@@ -38,7 +36,10 @@ def launch_setup(context: LaunchContext, ld: LaunchDescription) -> None:
     pkg_share = FindPackageShare("spot_description").find("spot_description")
 
     # Since spot_image_publisher_node is responsible for retrieving and publishing images, disable all image publishing in spot_driver.
-    spot_driver_params = {"spot_name": spot_name}
+    spot_driver_params = {
+        "spot_name": spot_name,
+        "mock_enable": mock_enable,
+    }
 
     if mock_enable:
         mock_spot_driver_params = {"mock_has_arm": mock_has_arm}
@@ -56,7 +57,16 @@ def launch_setup(context: LaunchContext, ld: LaunchDescription) -> None:
     ld.add_action(spot_driver_node)
 
     if not tf_prefix and spot_name:
-        tf_prefix = PathJoinSubstitution([spot_name, ""])
+        tf_prefix = PathJoinSubstitution([spot_name, ""]
+    
+    object_sync_node = launch_ros.actions.Node(
+        package="spot_driver",
+        executable="object_synchronizer_node",
+        output="screen",
+        parameters=[config_file, {"spot_name": spot_name}],
+        namespace=spot_name,
+    )
+    ld.add_action(object_sync_node)
 
     robot_description = Command(
         [
