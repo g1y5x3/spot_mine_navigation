@@ -8,7 +8,9 @@ import bosdyn.client
 from bosdyn.client import spot_cam
 from bosdyn.client.payload import PayloadClient
 from bosdyn.client.spot_cam.ptz import PtzClient
-from bosdyn.api.spot_cam import ptz_pb2
+from bosdyn.client.spot_cam.compositor import CompositorClient
+from bosdyn.client.spot_cam.streamquality import StreamQualityClient
+from bosdyn.api.spot_cam import ptz_pb2, streamquality_pb2
 
 from spot_wrapper.cam_wrapper import ImageStreamWrapper
 from spot_wrapper.wrapper import SpotWrapper
@@ -47,9 +49,19 @@ class ThermalPublisher(Node):
                 "admin interface"
             )
 
+        # set to the default ptz position
         ptz_desc = ptz_pb2.PtzDescription(name="mech")
         ptz_position = self.robot.ensure_client(PtzClient.default_service_name).set_ptz_position(ptz_desc, 325, 0, 1)
         self.get_logger().info(f"PTZ Position: pan {ptz_position.pan.value}, tilt {ptz_position.tilt.value}, zoom {ptz_position.zoom.value}")
+
+        # set the thermal composition
+        comp_result = self.robot.ensure_client(CompositorClient.default_service_name).set_screen("mech_full_ir")
+        self.get_logger().info(f"Mode: {comp_result}")
+
+        # set to the lower bitrate for streaming
+        stream_result = self.robot.ensure_client(StreamQualityClient.default_service_name).set_stream_params(
+            1000000, None, None, 1, streamquality_pb2.StreamParams.AutoExposure(), None, None)
+        self.get_logger().info(f"Target Bitrate: {stream_result.targetbitrate}")
 
         self.image_stream = ImageStreamWrapper(self.hostname, self.robot, self.logger)
         self.last_image_time = self.image_stream.last_image_time
