@@ -28,7 +28,7 @@ class ThermalPublisher(Node):
         self.logger = rcutils_logger.RcutilsLogger(name=f"thermal_publisher")
         self.cv_bridge = CvBridge()
 
-        # initialize the spotCAM payload, mostly just from the cam_wrapper
+        # initialize the spotCAM payload, mostly just from the cam_wrapper, https://github.com/bdaiinstitute/spot_wrapper/blob/main/spot_wrapper/cam_wrapper.py
         port = 0
         self.sdk = bosdyn.client.create_standard_sdk("Spot CAM Client", cert_resource_glob=None)
         spot_cam.register_all_service_clients(self.sdk)
@@ -49,6 +49,7 @@ class ThermalPublisher(Node):
                 "admin interface"
             )
 
+        # slightly modified from ptz.py, compositor.py and streamquality.py in https://github.com/boston-dynamics/spot-sdk/tree/master/python/examples/spot_cam
         # set to the default ptz position
         ptz_desc = ptz_pb2.PtzDescription(name="mech")
         ptz_position = self.robot.ensure_client(PtzClient.default_service_name).set_ptz_position(ptz_desc, 325, 0, 1)
