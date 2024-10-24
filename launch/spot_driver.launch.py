@@ -16,10 +16,10 @@ THIS_PACKAGE = "spot_mine_navigation"
 
 def launch_setup(context: LaunchContext, ld: LaunchDescription) -> None:
     config_file = LaunchConfiguration("config_file")
-    launch_rviz = LaunchConfiguration("launch_rviz")
-    rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
     spot_name = LaunchConfiguration("spot_name").perform(context)
     tf_prefix = LaunchConfiguration("tf_prefix").perform(context)
+    launch_rviz = LaunchConfiguration("launch_rviz")
+    rviz_config_file = LaunchConfiguration("rviz_config_file").perform(context)
     mock_enable = IfCondition(LaunchConfiguration("mock_enable", default="False")).evaluate(context)
 
     # if config_file has been set (and is not the default empty string) and is also not a file, do not launch anything.
@@ -114,15 +114,11 @@ def launch_setup(context: LaunchContext, ld: LaunchDescription) -> None:
     )
     ld.add_action(spot_alert_node)
 
-    rviz = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([FindPackageShare(THIS_PACKAGE), "/launch", "/rviz.launch.py"]),
-        launch_arguments={
-            "spot_name": spot_name,
-            "rviz_config_file": rviz_config_file,
-        }.items(),
-        condition=IfCondition(launch_rviz),
+    velodyne_publisher = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([FindPackageShare('velodyne'), "/launch", "/velodyne-all-nodes-VLP16-launch.py"]),
+        condition=IfCondition(LaunchConfiguration("launch_velodyne", default="True"))
     )
-    ld.add_action(rviz)
+    ld.add_action(velodyne_publisher)
 
     spot_image_publishers = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([FindPackageShare(THIS_PACKAGE), "/launch", "/spot_image_publishers.launch.py"]),
@@ -133,6 +129,15 @@ def launch_setup(context: LaunchContext, ld: LaunchDescription) -> None:
     )
     ld.add_action(spot_image_publishers)
 
+    rviz = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([FindPackageShare(THIS_PACKAGE), "/launch", "/rviz.launch.py"]),
+        launch_arguments={
+            "spot_name": spot_name,
+            "rviz_config_file": rviz_config_file,
+        }.items(),
+        condition=IfCondition(launch_rviz),
+    )
+    ld.add_action(rviz)
 
 def generate_launch_description() -> launch.LaunchDescription:
     launch_args = []
