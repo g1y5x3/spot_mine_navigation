@@ -12,22 +12,22 @@ from webots_ros2_driver.wait_for_controller_connection import (
     WaitForControllerConnection,
 )
 
-
-package_dir = get_package_share_directory("webots_spot")
+THIS_PACKAGE = get_package_share_directory("spot_mine_navigation")
+webot_dir = get_package_share_directory("webots_spot")
 
 
 # Define all the ROS 2 nodes that need to be restart on simulation reset here
 def get_ros2_nodes(*args):
     # SpotArm Driver node
     spotarm_ros2_control_params = os.path.join(
-        package_dir, "resource", "spotarm_ros2_controllers.yaml"
+        webot_dir, "resource", "spotarm_ros2_controllers.yaml"
     )
     spotarm_driver = WebotsController(
         robot_name="SpotArm",
         parameters=[
             {
                 "robot_description": os.path.join(
-                    package_dir, "resource", "spotarm_control.urdf"
+                    webot_dir, "resource", "spotarm_control.urdf"
                 )
             },
             {"use_sim_time": True},
@@ -90,7 +90,7 @@ def get_ros2_nodes(*args):
 
 def generate_launch_description():
     webots = WebotsLauncher(
-        world=PathJoinSubstitution([package_dir, "worlds", "spot.wbt"])
+        world=PathJoinSubstitution([webot_dir, "worlds", "spot.wbt"])
     )
     ros2_supervisor = Ros2SupervisorLauncher()
 
@@ -99,7 +99,7 @@ def generate_launch_description():
         parameters=[
             {
                 "robot_description": os.path.join(
-                    package_dir, "resource", "spot_control.urdf"
+                    webot_dir, "resource", "spot_control.urdf"
                 ),
                 "use_sim_time": True,
                 "set_robot_state_publisher": False,  # foot positions are wrong with webot's urdf
@@ -108,7 +108,7 @@ def generate_launch_description():
         respawn=True,
     )
 
-    with open(os.path.join(package_dir, "resource", "spot.urdf")) as f:
+    with open(os.path.join(webot_dir, "resource", "spot.urdf")) as f:
         robot_desc = f.read()
 
     robot_state_publisher = Node(
@@ -131,12 +131,12 @@ def generate_launch_description():
 
     # The following line is important!
     # This event handler respawns the ROS 2 nodes on simulation reset (supervisor process ends).
-    reset_handler = launch.actions.RegisterEventHandler(
-        event_handler=launch.event_handlers.OnProcessExit(
-            target_action=ros2_supervisor,
-            on_exit=get_ros2_nodes,
-        )
-    )
+    # reset_handler = launch.actions.RegisterEventHandler(
+    #     event_handler=launch.event_handlers.OnProcessExit(
+    #         target_action=ros2_supervisor,
+    #         on_exit=get_ros2_nodes,
+    #     )
+    # )
 
     webots_event_handler = launch.actions.RegisterEventHandler(
         event_handler=launch.event_handlers.OnProcessExit(
@@ -177,8 +177,8 @@ def generate_launch_description():
             robot_state_publisher,
             # spot_pointcloud2,
             webots_event_handler,
-            reset_handler,
+            # reset_handler,
             pointcloud_to_laserscan_node,
         ]
-        + get_ros2_nodes()
+        # + get_ros2_nodes()
     )
