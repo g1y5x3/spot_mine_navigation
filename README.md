@@ -13,6 +13,9 @@ This project is developed to navigate Spot autonomously for miner safety monitor
 * [spot_ros2](https://github.com/bdaiinstitute/spot_ros2)
 * [velodyne](https://github.com/ros-drivers/velodyne/tree/humble-devel)
 
+#### To use the simulator
+* [webots_ros2_spot](https://github.com/MASKOR/webots_ros2_spot)
+
 ### Installing
 
 In your ROS 2 workspace `src` directory, clone the repository:
