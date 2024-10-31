@@ -6,24 +6,18 @@ from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 from webots_ros2_driver.webots_launcher import WebotsLauncher, Ros2SupervisorLauncher
 from webots_ros2_driver.webots_controller import WebotsController
-from webots_ros2_driver.wait_for_controller_connection import WaitForControllerConnection
 
 webot_dir = get_package_share_directory("webots_spot")
 
-
 def generate_launch_description():
-    webots = WebotsLauncher(
-        world=PathJoinSubstitution([webot_dir, "worlds", "spot_noarm.wbt"])
-    )
+    webots = WebotsLauncher(world=PathJoinSubstitution([webot_dir, "worlds", "spot_noarm.wbt"]))
     ros2_supervisor = Ros2SupervisorLauncher()
 
     spot_driver = WebotsController(
         robot_name="Spot",
         parameters=[
             {
-                "robot_description": os.path.join(
-                    webot_dir, "resource", "spot_control.urdf"
-                ),
+                "robot_description": os.path.join(webot_dir, "resource", "spot_control.urdf"),
                 "use_sim_time": True,
                 "set_robot_state_publisher": False,  # foot positions are wrong with webot's urdf
             }
