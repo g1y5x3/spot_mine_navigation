@@ -13,7 +13,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', glob('launch/*launch.[pxy][yma]*')),
         ('share/' + package_name + '/worlds', glob('worlds/*.wbt')),
-        ('share/' + package_name + '/protos', glob('protos/*.proto')),
+        # ('share/' + package_name + '/protos', glob('protos/*.proto')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
