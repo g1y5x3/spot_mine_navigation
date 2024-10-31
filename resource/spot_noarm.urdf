@@ -213,7 +213,7 @@
     <child link="Velodyne_Puck"/>
     <origin xyz="-0.063 0 0.1518" rpy="-0.000008 -0.000008 0.000001"/>
   </joint>
-  <link name="solid">
+  <!-- <link name="solid">
   </link>
   <joint name="base_link_solid_joint" type="fixed">
     <parent link="base_link"/>
@@ -233,7 +233,7 @@
     <parent link="solid"/>
     <child link="kinect color"/>
     <origin xyz="0 0 -0.0127" rpy="-2.356193 1.570792 -0.7854"/>
-  </joint>
+  </joint> -->
   <joint name="rear right shoulder abduction motor" type="revolute">
     <parent link="base_link"/>
     <child link="rear right shoulder"/>

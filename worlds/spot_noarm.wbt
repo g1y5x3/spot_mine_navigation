@@ -355,11 +355,11 @@ DEF Spot Spot {
   controller "<extern>"
   supervisor TRUE
   frontExtension [
-    Kinect {
-      translation 0 -0.007 -0.240831
-      rotation 1 0 0 -0.35
-      foot FALSE
-    }
+    # Kinect {
+    #   translation 0 -0.007 -0.240831
+    #   rotation 1 0 0 -0.35
+    #   foot FALSE
+    # }
   ]
   middleExtension [
     VelodynePuck {
