@@ -201,7 +201,7 @@
           </mesh>
         </geometry>
       </collision>
-      <collision name="base_link_fixed_joint_lump__barn_link_collision_1">
+      <!-- <collision name="base_link_fixed_joint_lump__barn_link_collision_1">
         <pose>-0.0412 0 0.085 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -256,7 +256,7 @@
             <size>0.01 0.05 0.02</size>
           </box>
         </geometry>
-      </collision>
+      </collision> -->
       <visual name="base_link_visual">
         <geometry>
           <mesh>
@@ -264,7 +264,7 @@
           </mesh>
         </geometry>
       </visual>
-      <visual name="base_link_fixed_joint_lump__barn_link_visual_1">
+      <!-- <visual name="base_link_fixed_joint_lump__barn_link_visual_1">
         <pose>-0.0412 0 0.085 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -361,9 +361,9 @@
           <specular>0.1 0.1 0.1 1</specular>
           <emissive>0 0 0 0</emissive>
         </material>
-      </visual>
+      </visual> -->
       <self_collide>0</self_collide>
-      <light name="nav_light_front_source" type="spot">
+      <!-- <light name="nav_light_front_source" type="spot">
         <pose>0.181 0 0.423 3.1415926535897931 -1.5707963267948966 3.1415926535897931</pose>
         <attenuation>
           <range>50</range>
@@ -430,7 +430,7 @@
           <falloff>1</falloff>
         </spot>
         <direction>0 0 -1</direction>
-      </light>
+      </light> -->
     </link>
     <link name="body">
       <inertial>
@@ -545,7 +545,7 @@
         </ode>
       </physics>
     </joint>
-    <link name="encoder_rotating_link">
+    <!-- <link name="encoder_rotating_link">
       <pose>0.141 0 0.213797 0 -0 0</pose>
       <inertial>
         <pose>0.004659 -0 0.061904 0 -0 0</pose>
@@ -1086,7 +1086,7 @@
         </dynamics>
         <use_parent_model_frame>0</use_parent_model_frame>
       </axis>
-    </joint>
+    </joint> -->
     <link name="battery">
       <pose>0 0 -0.03 0 -0 0</pose>
       <inertial>
