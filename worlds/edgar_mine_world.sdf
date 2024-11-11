@@ -11,6 +11,12 @@
         name="ignition::gazebo::systems::SceneBroadcaster">
     </plugin>
 
+    <plugin
+        filename="ignition-gazebo-sensors-system"
+        name="ignition::gazebo::systems::Sensors">
+        <render_engine>ogre</render_engine>
+    </plugin>
+
     <physics name="1ms" type="ode">
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1.0</real_time_factor>
@@ -405,9 +411,12 @@
         </inertia>
       </inertial>
       <sensor name="back_fisheye_image" type="camera">
-        <pose>0 0.01 0 0 -0 0</pose>
+        <always_on>1</always_on>
         <update_rate>30</update_rate>
-        <visualize>0</visualize>
+        <visualize>true</visualize>
+        <topic>spot/camera/back_fisheye_image</topic>
+        <visualize>true</visualize>
+        <pose>0 0.01 0 0 -0 0</pose>
         <camera>
           <horizontal_fov>1.78634</horizontal_fov>
           <image>
@@ -436,11 +445,6 @@
             <scale_to_hfov>1</scale_to_hfov>
           </lens>
         </camera>
-        <always_on>1</always_on>
-        <update_rate>30</update_rate>
-        <visualize>true</visualize>
-        <topic>camera/back_fisheye_image</topic>
-        <!-- <plugin name="subt::MonoCameraSystem" filename="mono-camera-system"/> -->
       </sensor>
       <sensor name="back_depth" type="depth_camera">
         <update_rate>30</update_rate>
