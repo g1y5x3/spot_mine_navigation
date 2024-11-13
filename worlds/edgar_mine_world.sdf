@@ -966,11 +966,43 @@
     <plugin
         filename="ignition-gazebo-joint-trajectory-controller-system"
         name="ignition::gazebo::systems::JointTrajectoryController">
+
         <joint_name>front_left_hip_x</joint_name>
         <initial_position>0</initial_position>
 
         <joint_name>front_left_hip_y</joint_name>
         <initial_position>0</initial_position>
+
+        <joint_name>front_left_knee</joint_name>
+        <initial_position>0</initial_position>
+
+        <joint_name>front_right_hip_x</joint_name>
+        <initial_position>0</initial_position>
+
+        <joint_name>front_right_hip_y</joint_name>
+        <initial_position>0</initial_position>
+
+        <joint_name>front_right_knee</joint_name>
+        <initial_position>0</initial_position>
+
+        <joint_name>rear_left_hip_x</joint_name>
+        <initial_position>0</initial_position>
+
+        <joint_name>rear_left_hip_y</joint_name>
+        <initial_position>0</initial_position>
+
+        <joint_name>rear_left_knee</joint_name>
+        <initial_position>0</initial_position>
+
+        <joint_name>rear_right_hip_x</joint_name>
+        <initial_position>0</initial_position>
+
+        <joint_name>rear_right_hip_y</joint_name>
+        <initial_position>0</initial_position>
+
+        <joint_name>rear_right_knee</joint_name>
+        <initial_position>0</initial_position>
+
     </plugin>
 
     <joint name="front_left_hip_x" type="revolute">
